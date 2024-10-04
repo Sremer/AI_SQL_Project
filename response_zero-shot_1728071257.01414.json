@@ -1,0 +1,72 @@
+[
+  {
+    "question": "Which fish can be caught in the spring?",
+    "sql": "\nSELECT f.fish_name \nFROM fish f\nJOIN fish_season fs ON f.id = fs.fish_id\nJOIN season s ON fs.season_id = s.id\nWHERE s.season_name = 'spring';\n",
+    "queryRawResponse": "[('anchovy',), ('sardine',), ('bream',), ('largemouth bass',), ('smallmouth bass',)]",
+    "friendlyResponse": "In the spring, you can catch anchovies, sardines, bream, largemouth bass, and smallmouth bass!",
+    "error": "None"
+  },
+  {
+    "question": "What is the best crop to plant in summer if the season is 28 days long and I want to maximize profit?",
+    "sql": "\nSELECT crop.crop_name\nFROM crop\nWHERE crop.season_id = (SELECT id FROM season WHERE season_name = 'Summer')\nORDER BY (crop.grow_time / crop.single_unit_sell_price) ASC\nLIMIT 1;\n",
+    "queryRawResponse": "[('melon',)]",
+    "friendlyResponse": "The best crop to plant in summer is melon!",
+    "error": "None"
+  },
+  {
+    "question": "What fish would give me the best profit in the summer?",
+    "sql": "\nSELECT fish_name, sell_price \nFROM fish \nWHERE id IN (\n    SELECT fish_id \n    FROM fish_season \n    WHERE season_id = (SELECT id FROM season WHERE season_name = 'summer')\n) \nORDER BY sell_price DESC \nLIMIT 1;\n",
+    "queryRawResponse": "[('pufferfish', 200)]",
+    "friendlyResponse": "The best fish for profit in the summer is pufferfish, which can earn you 200.",
+    "error": "None"
+  },
+  {
+    "question": "What fish can be caught in all seasons?",
+    "sql": "\nSELECT f.fish_name\nFROM fish f\nJOIN fish_season fs ON f.id = fs.fish_id\nGROUP BY f.id\nHAVING COUNT(DISTINCT fs.season_id) = (SELECT COUNT(*) FROM season);\n",
+    "queryRawResponse": "[('bream',), ('largemouth bass',)]",
+    "friendlyResponse": "You can catch bream and largemouth bass in all seasons!",
+    "error": "None"
+  },
+  {
+    "question": "What are all the different things I can get in fall?",
+    "sql": "\nSELECT crop.crop_name AS item_name, crop.single_unit_sell_price AS sell_price FROM crop \nJOIN season ON crop.season_id = season.id WHERE season.season_name = 'fall'\nUNION\nSELECT fish.fish_name AS item_name, fish.sell_price FROM fish \nJOIN fish_season ON fish.id = fish_season.fish_id \nJOIN season ON fish_season.season_id = season.id WHERE season.season_name = 'fall'\nUNION\nSELECT forage_items.item_name, forage_items.sell_price FROM forage_items \nJOIN season ON forage_items.season_id = season.id WHERE season.season_name = 'fall';\n",
+    "queryRawResponse": "[('beet', 100), ('bok choy', 80), ('cranberries', 75), ('eggplant', 60), ('grape', 80), ('pumpkin', 320), ('yam', 160), ('anchovy', 30), ('sardine', 40), ('bream', 45), ('largemouth bass', 100), ('smallmouth bass', 50), ('salmon', 75), ('walleye', 105), ('blackberry', 20), ('common mushroom', 40), ('hazelnut', 90), ('wild plum', 80)]",
+    "friendlyResponse": "In fall, you can get: beets, bok choy, cranberries, eggplant, grapes, pumpkins, yams, anchovies, sardines, bream, largemouth bass, smallmouth bass, salmon, walleye, blackberries, common mushrooms, hazelnuts, and wild plums. Enjoy the harvest!",
+    "error": "None"
+  },
+  {
+    "question": "What are the top 5 things I can get profit from and what seasons are they in?",
+    "sql": "\nSELECT \n    crop.crop_name AS item_name, \n    crop.single_unit_sell_price AS profit, \n    season.season_name\nFROM \n    crop\nJOIN \n    season ON crop.season_id = season.id\nUNION ALL\nSELECT \n    fish.fish_name AS item_name, \n    fish.sell_price AS profit, \n    season.season_name\nFROM \n    fish\nJOIN \n    fish_season ON fish.id = fish_season.fish_id\nJOIN \n    season ON fish_season.season_id = season.id\nUNION ALL\nSELECT \n    forage_items.item_name AS item_name, \n    forage_items.sell_price AS profit, \n    season.season_name\nFROM \n    forage_items\nJOIN \n    season ON forage_items.season_id = season.id\nORDER BY \n    profit DESC\nLIMIT 5;\n",
+    "queryRawResponse": "[('pumpkin', 320, 'fall'), ('melon', 250, 'summer'), ('pufferfish', 200, 'summer'), ('califlower', 175, 'spring'), ('yam', 160, 'fall')]",
+    "friendlyResponse": "Here are the top 5 profitable items and their seasons:\n\n1. Pumpkin - $320 (Fall)\n2. Melon - $250 (Summer)\n3. Pufferfish - $200 (Summer)\n4. Cauliflower - $175 (Spring)\n5. Yam - $160 (Fall)",
+    "error": "None"
+  },
+  {
+    "question": "If I can only plant 3 kinds of crops each season and each season is 28 days long, which 3 crops should I plant for each season to maximize profit?",
+    "sql": "\nSELECT season.season_name, \n       crop.crop_name, \n       (crop.single_unit_sell_price * (28 / crop.grow_time)) AS total_profit\nFROM crop\nJOIN season ON crop.season_id = season.id\nWHERE crop.id IN (\n    SELECT id\n    FROM (\n        SELECT id, \n               (single_unit_sell_price * (28 / grow_time)) AS profit \n        FROM crop \n        WHERE multiple_harvests = TRUE \n        AND season_id = season.id\n        ORDER BY profit DESC\n        LIMIT 3\n    ) AS top_crops\n)\nORDER BY season.season_name, total_profit DESC;\n",
+    "queryRawResponse": "[('fall', 'eggplant', Decimal('336.0000')), ('fall', 'cranberries', Decimal('300.0000')), ('fall', 'grape', Decimal('224.0000')), ('spring', 'strawberry', Decimal('420.0000')), ('spring', 'green bean', Decimal('112.0000')), ('summer', 'tomato', Decimal('152.7273')), ('summer', 'blueberry', Decimal('107.6923'))]",
+    "friendlyResponse": "For each season, you should plant the following crops to maximize profit:\n\n- **Fall**: Eggplant, Cranberries, Grape\n- **Spring**: Strawberry, Green Bean\n- **Summer**: Tomato, Blueberry",
+    "error": "None"
+  },
+  {
+    "question": "What location can I find the most fish at?",
+    "sql": "\nSELECT location \nFROM fish \nGROUP BY location \nORDER BY COUNT(*) DESC \nLIMIT 1;\n",
+    "queryRawResponse": "[('river',)]",
+    "friendlyResponse": "You can find the most fish at the river!",
+    "error": "None"
+  },
+  {
+    "question": "What combination of 1 crop, 1 foraged item, and 1 fish would give me the most profit?",
+    "sql": "\nSELECT c.crop_name, fi.item_name, f.fish_name, \n       (c.single_unit_sell_price + fi.sell_price + f.sell_price) AS total_profit\nFROM crop c\nJOIN forage_items fi ON fi.season_id = c.season_id\nJOIN fish_season fs ON fs.season_id = c.season_id\nJOIN fish f ON f.id = fs.fish_id\nORDER BY total_profit DESC\nLIMIT 1;\n",
+    "queryRawResponse": "[('melon', 'grape', 'pufferfish', 530)]",
+    "friendlyResponse": "The best combination for profit is a melon, grape, and pufferfish, totaling 530.",
+    "error": "None"
+  },
+  {
+    "question": "How many different crops can I grow in less than 5 days and what are they?",
+    "sql": "\nSELECT crop_name \nFROM crop \nWHERE grow_time < 5;\n",
+    "queryRawResponse": "[('parsnip',), ('bok choy',)]",
+    "friendlyResponse": "You can grow two different crops in less than 5 days: parsnip and bok choy!",
+    "error": "None"
+  }
+]
