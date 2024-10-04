@@ -9,7 +9,7 @@ The purpose my database is to show information useful for the videogame "Stardew
 
 ### Examples
 
-Example question and response that worked:
+* Example question and response that worked:
 
 question: If I can only plant 3 kinds of crops each season and each season is 28 days long, which 3 crops should I plant for each season to maximize profit?
 
@@ -28,7 +28,7 @@ For maximizing profit, you should plant:
 **Summer:** Melon, Radish, Hot Pepper  
 **Fall:** Pumpkin, Bok Choy, Beet
 
-Example question and response that failed:
+* Example question and response that failed:
 
 question: If I can only plant 3 kinds of crops each season and each season is 28 days long, which 3 crops should I plant for each season to maximize profit?
 
@@ -45,6 +45,7 @@ ORDER BY
 LIMIT 3;
 
 [('spring', 'strawberry', Decimal('420.0000')), ('spring', 'califlower', Decimal('408.3333')), ('spring', 'potato', Decimal('373.3333'))]
+
 For spring, you should plant strawberries, cauliflower, and potatoes to maximize profit!
 
 ### Discussion of strategies
