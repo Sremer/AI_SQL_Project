@@ -22,6 +22,7 @@ GROUP BY season.id, crop.id
 ORDER BY season.id, profit DESC;
 
 [('spring', 'strawberry', Decimal('420.0000')), ('spring', 'califlower', Decimal('408.3333')), ('spring', 'potato', Decimal('373.3333')), ('spring', 'parsnip', Decimal('245.0000')), ('spring', 'green bean', Decimal('112.0000')), ('summer', 'melon', Decimal('583.3333')), ('summer', 'radish', Decimal('420.0000')), ('summer', 'hot pepper', Decimal('224.0000')), ('summer', 'starfruit', Decimal('161.5385')), ('summer', 'tomato', Decimal('152.7273')), ('summer', 'blueberry', Decimal('107.6923')), ('summer', 'hops', Decimal('63.6364')), ('fall', 'pumpkin', Decimal('746.6667')), ('fall', 'bok choy', Decimal('560.0000')), ('fall', 'beet', Decimal('466.6667')), ('fall', 'yam', Decimal('448.0000')), ('fall', 'eggplant', Decimal('336.0000')), ('fall', 'cranberries', Decimal('300.0000')), ('fall', 'grape', Decimal('224.0000'))]
+
 For maximizing profit, you should plant:
 
 **Spring:** Strawberry, Cauliflower, Potato  
