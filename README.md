@@ -9,7 +9,7 @@ The purpose my database is to show information useful for the videogame "Stardew
 
 ### Examples
 
-* Example question and response that worked:
+* Example question and response that worked using **zero-shot**:
 
 question: If I can only plant 3 kinds of crops each season and each season is 28 days long, which 3 crops should I plant for each season to maximize profit?
 
@@ -28,7 +28,7 @@ For maximizing profit, you should plant:
 **Summer:** Melon, Radish, Hot Pepper  
 **Fall:** Pumpkin, Bok Choy, Beet
 
-* Example question and response that failed:
+* Example question and response that failed, using **one domain multi-shot**:
 
 question: If I can only plant 3 kinds of crops each season and each season is 28 days long, which 3 crops should I plant for each season to maximize profit?
 
